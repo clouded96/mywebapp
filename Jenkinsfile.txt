@@ -1,0 +1,20 @@
+node{
+
+def mavenHome = tool name: "maven3.9.6"
+
+
+stage('CheckOutCode'){
+git branch: 'main', credentialsId: 'f4a6080b-2b79-4ad4-8e01-148863854297', url: 'https://github.com/clouded96/mywebapp.git' 
+}
+
+stage('Build'){
+sh "${mavenHome}/bin/mvn clean package"
+}
+
+stage('DeployAppIntoTomcatServer'){
+sshagent(['8dd0581f-8ff6-4e00-8ce3-373313044477']) {
+ sh "scp -o StrictHostKeyChecking=no target/mywebapp.war  ec2-user@34.234.100.247:/opt/tomcat/webapps/"
+}
+}
+
+}
